@@ -1,0 +1,104 @@
+{
+    "name": "@noel/buf-vscode",
+    "displayName": "Buf for VSCode",
+    "description": "🐻‍❄️🍱 Up-to-date, unofficial Visual Studio Code extension for Buf",
+    "version": "0.1.0",
+    "publisher": "auguwu",
+    "author": "Noel Towa <cutie@floofy.dev>",
+    "repository": "https://github.com/auguwu/buf-vscode.git",
+    "bugs": "https://github.com/auguwu/buf-vscode/issues/new",
+    "license": "Apache-2.0",
+    "categories": ["Formatters", "Linters", "Programming Languages"],
+    "keywords": ["proto", "proto3", "protocol buffers", "buf", "bufbuild"],
+    "main": "./out/extension.cjs",
+    "type": "module",
+    "engines": {
+        "vscode": "^1.79.x"
+    },
+    "activationEvents": [
+        "workspaceContains:**/*.proto",
+        "workspaceContains:**/buf.yaml",
+        "workspaceContains:**/buf.lock",
+        "workspaceContains:**/buf.mod",
+        "workspaceContains:**/buf.work",
+        "workspaceContains:**/buf.gen",
+        "workspaceContains:**/buf.gen.yaml",
+        "workspaceContains:**/buf.work.yaml"
+    ],
+    "contributes": {
+        "configuration": {
+            "title": "buf.build",
+            "properties": {
+                "buf.binary": {
+                    "type": "string",
+                    "default": "buf",
+                    "description": "Location of the `buf` binary"
+                },
+                "buf.experimentals.lsp.enable": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Whether to enable the experimental LSP functionality"
+                },
+                "buf.experimentals.lsp.args": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "default": ["--log-format=text"],
+                    "description": "Arguments and/or flags to pass in to the `buf beta lsp` command"
+                }
+            }
+        },
+        "commands": [
+            {
+                "category": "Linters",
+                "command": "buf-vscode.lint",
+                "title": "Lint all Protocol Buffers files using `buf lint`"
+            }
+        ],
+        "languages": [
+            {
+                "id": "yaml",
+                "filenames": ["buf.lock", "buf.mod", "buf.work", "buf.gen"]
+            },
+            {
+                "id": "proto",
+                "extensions": [".proto"],
+                "configuration": "./syntaxes/protobuf.configuration.json",
+                "aliases": ["Protocol Buffers", "Protobuf"]
+            }
+        ],
+        "grammars": [
+            {
+                "language": "proto",
+                "scopeName": "source.proto",
+                "path": "./syntaxes/protobuf.tmLanguage.json"
+            }
+        ]
+    },
+    "scripts": {
+        "publish": "./hack/publish.ts",
+        "package": "./hack/package.ts",
+        "watch": "vite build --watch",
+        "build": "vite build",
+        "lint": "biome lint",
+        "fmt": "biome format"
+    },
+    "dependencies": {
+        "@noelware/utils": "2.5.1",
+        "reactive-vscode": "0.2.6-beta.1",
+        "semver": "7.6.3",
+        "vscode-languageclient": "9.0.1",
+        "which": "5.0.0"
+    },
+    "devDependencies": {
+        "@augu/tsconfig": "1.2.0",
+        "@biomejs/biome": "1.9.3",
+        "@types/bun": "1.1.10",
+        "@types/node": "22.7.5",
+        "@types/semver": "7.5.8",
+        "@types/vscode": "1.79",
+        "@types/which": "3.0.4",
+        "@vscode/vsce": "3.1.1",
+        "typescript": "5.6.3",
+        "vite": "5.4.8"
+    }
+}
