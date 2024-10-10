@@ -20,6 +20,8 @@ import { useCommand } from 'reactive-vscode';
 import { spawnSync } from 'child_process';
 import * as vscode from 'vscode';
 
+// revised from Buf's version
+// https://github.com/bufbuild/vscode-buf/blob/54b6d060c4986063a98a8044569679ef3b2c08a2/src/extension.ts#L58-L110
 export function createLinter(
     binary: string,
     channel: vscode.OutputChannel
@@ -48,37 +50,6 @@ export function createLinter(
 
     return [collection, perform];
 }
-
-/*
-    const warnings = parseLines(lines);
-    if (isError(warnings)) {
-      console.log(warnings);
-      return;
-    }
-    const warningsForThisDocument = warnings.filter(
-      (warning: Warning): Boolean => {
-        return warning.path === document.uri.fsPath;
-      }
-    );
-    const diagnostics = warningsForThisDocument.map(
-      (error: Warning): vscode.Diagnostic => {
-        // VSC lines and columns are 0 indexed, so we need to subtract
-        const range = new vscode.Range(
-          error.start_line - 1,
-          error.start_column - 1,
-          error.end_line - 1,
-          error.end_column - 1
-        );
-        return new vscode.Diagnostic(
-          range,
-          `${error.message} (${error.type})`,
-          vscode.DiagnosticSeverity.Warning
-        );
-      }
-    );
-    diagnosticCollection.set(document.uri, diagnostics);
-  };
-*/
 
 export default (binary: string, channel: vscode.OutputChannel) =>
     useCommand('buf-vscode.lint', async (editor: vscode.TextEditor) => {
