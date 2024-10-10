@@ -27,7 +27,7 @@ export default defineConfig({
             entry: './src/extension.ts'
         },
         rollupOptions: {
-            external: ['vscode', 'child_process', 'path', 'fs', 'fs/promises', 'vscode-languageclient/node']
+            external: ['vscode', 'child_process', 'path', 'fs', 'fs/promises', 'vscode-languageclient/node', 'os']
         }
     }
 });

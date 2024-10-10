@@ -67,6 +67,10 @@ export async function getBinaryLocation() {
         return null;
     }
 
+    if (location.length === 0) {
+        return null;
+    }
+
     return location;
 }
 

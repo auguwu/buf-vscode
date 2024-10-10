@@ -20,7 +20,8 @@ import { getBinaryLocation, hasLSPSupport } from './utils';
 import * as vscode from 'vscode';
 import * as lc from 'vscode-languageclient/node';
 
-import lint from './commands/lint';
+import lint, { createLinter } from './commands/lint';
+import formatter from './formatter';
 
 const { activate, deactivate } = defineExtension(async () => {
     console.log('Hello, world!');
@@ -70,6 +71,16 @@ const { activate, deactivate } = defineExtension(async () => {
 
     // Register the `buf-vscode.lint` command
     lint(binary, channel);
+
+    // Register disposables
+    const [, linter] = createLinter(binary, channel);
+    const fmt = new formatter(binary);
+
+    useDisposable(vscode.languages.registerDocumentFormattingEditProvider('proto', fmt));
+    useDisposable(vscode.languages.registerDocumentFormattingEditProvider('proto3', fmt));
+    useDisposable(vscode.workspace.onDidSaveTextDocument(linter));
+    useDisposable(vscode.workspace.onDidOpenTextDocument(linter));
+    useDisposable(fmt);
 });
 
 export { activate, deactivate };
