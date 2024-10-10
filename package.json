@@ -1,5 +1,5 @@
 {
-    "name": "@noel/buf-vscode",
+    "name": "buf-vscode",
     "displayName": "Buf for VSCode",
     "description": "🐻‍❄️🍱 Up-to-date, unofficial Visual Studio Code extension for Buf",
     "version": "0.1.0",
