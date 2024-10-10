@@ -15,10 +15,28 @@
  * limitations under the License.
  */
 
+import { useActiveTextEditor, useCommand } from 'reactive-vscode';
 import { getFilesystemPath } from '../utils';
-import { useCommand } from 'reactive-vscode';
 import { spawnSync } from 'child_process';
+import { isObject } from '@noelware/utils';
 import * as vscode from 'vscode';
+
+interface Warning {
+    // lines and columns are 1 indexed for some reason
+    start_line: number;
+    start_column: number;
+
+    end_line: number;
+    end_column: number;
+
+    message: string;
+    path: string;
+    type: string;
+}
+
+const isWarning = (o: unknown): o is Warning =>
+    isObject(o) &&
+    ['start_line', 'start_column', 'end_line', 'end_column', 'message', 'path', 'type'].every((x) => x in o);
 
 // revised from Buf's version
 // https://github.com/bufbuild/vscode-buf/blob/54b6d060c4986063a98a8044569679ef3b2c08a2/src/extension.ts#L58-L110
@@ -46,13 +64,60 @@ export function createLinter(
             channel.appendLine(`Unable to lint with \`buf\`: ${child.error}`);
             return;
         }
+
+        const lines = child.stdout
+            .toString('utf-8')
+            .split('\n')
+            .map((t) => t.trim());
+
+        const warnings: Warning[] = [];
+        for (const line of lines) {
+            try {
+                const data = JSON.parse(line);
+                if (!isWarning(data)) {
+                    channel.appendLine(
+                        `[buf lint]: skipping data '${JSON.stringify(data)}' since it is not a valid warning`
+                    );
+
+                    continue;
+                }
+
+                warnings.push(data);
+            } catch (ex) {
+                channel.appendLine(`[buf lint]: failed to parse line ${line}: ${ex}`);
+            }
+        }
+
+        const forThisDocument = warnings.filter((x) => x.path === document.uri.fsPath);
+        collection.set(
+            document.uri,
+            forThisDocument.map((error) => {
+                const range = new vscode.Range(
+                    error.start_line - 1,
+                    error.start_column - 1,
+                    error.end_line - 1,
+                    error.end_column - 1
+                );
+
+                return new vscode.Diagnostic(
+                    range,
+                    `[${error.type.toLowerCase()}]: ${error.message}`,
+                    vscode.DiagnosticSeverity.Warning
+                );
+            })
+        );
     };
 
     return [collection, perform];
 }
 
 export default (binary: string, channel: vscode.OutputChannel) =>
-    useCommand('buf-vscode.lint', async (editor: vscode.TextEditor) => {
+    useCommand('buf-vscode.lint', () => {
+        const editor = useActiveTextEditor();
+        if (editor.value === undefined) {
+            return;
+        }
+
         const [, lint] = createLinter(binary, channel);
-        lint(editor.document);
+        lint(editor.value.document);
     });
