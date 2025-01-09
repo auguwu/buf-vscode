@@ -92,7 +92,7 @@
     "devDependencies": {
         "@augu/tsconfig": "1.2.0",
         "@biomejs/biome": "1.9.4",
-        "@types/bun": "1.1.15",
+        "@types/bun": "1.1.16",
         "@types/node": "22.10.5",
         "@types/semver": "7.5.8",
         "@types/vscode": "1.79",
