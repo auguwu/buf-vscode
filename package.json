@@ -93,7 +93,7 @@
         "@augu/tsconfig": "1.2.0",
         "@biomejs/biome": "1.9.4",
         "@types/bun": "1.2.2",
-        "@types/node": "22.13.1",
+        "@types/node": "22.13.2",
         "@types/semver": "7.5.8",
         "@types/vscode": "1.79",
         "@types/which": "3.0.4",
