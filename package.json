@@ -99,6 +99,6 @@
         "@types/which": "3.0.4",
         "@vscode/vsce": "3.3.2",
         "typescript": "5.8.3",
-        "vite": "6.2.6"
+        "vite": "6.3.0"
     }
 }
